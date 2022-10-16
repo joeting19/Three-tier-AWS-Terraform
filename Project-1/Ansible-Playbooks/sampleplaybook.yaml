@@ -1,0 +1,76 @@
+name: app-tier playbook
+hosts: all
+become: true
+become_user: ec2-user
+tasks:
+  -name: install mysql
+   yum:
+     name: mysql
+     state: latest
+
+  -name: installing node manager
+   shell: |
+     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+     source ~/.bashrc
+  
+
+---
+- name: app-tier playbook
+  hosts: all
+  remote_user: ec2-user
+  become: true
+  tasks:
+    - name: install mysql
+      become_user: ec2-user
+      yum:
+        name: mysql
+        state: latest
+
+    - name: Install Mysql package
+      become_user
+      yum:
+        name: MySQL-python
+        state: latest
+
+    - name: CREATE DBS
+      mysql_db:
+         name: webappdb
+         login_host: "{{ terraform-20220719025928125800000003.cggdpmo6alkj.us-east-1.rds.amazonaws.com }}"
+         login_user: joseph
+         login_password: "{{ ting1234 }}"
+
+    - name: installing node manager
+      become_user: ec2-user
+      shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+        source ~/.bashrc
+        nvm install 16
+        nvm use 16
+
+    - name: installing node manager
+      shell: |
+        cd /home/ec2-user/
+        aws s3 cp s3://ahjoesbucket/app-tier/ app-tier --recursive
+        cd /home/ec2-user/app-tier
+        npm install
+        pm2 start index.js
+
+
+
+---
+- name: app-tier playbook
+  hosts: all
+  remote_user: ec2-user
+  become: true
+  tasks:
+    - name: installing node manager
+      shell: |
+        cd /home/ec2-user/
+        rm -r app-tier
+        aws s3 cp s3://ahjoesbucket/app-tier/ app-tier --recursive
+        cd /home/ec2-user/app-tier
+
+
+
+
+      sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/v16.16.0/bin /home/ec2-user/.nvm/versions/node/v16.16.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user

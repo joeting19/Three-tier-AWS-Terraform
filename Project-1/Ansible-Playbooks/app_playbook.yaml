@@ -1,0 +1,17 @@
+---
+  - name: app playbook
+    hosts: all
+    become: true
+    ansible.builtin.shell: |
+      cd ~/
+      aws s3 cp s3://ahjoesbucket/app-tier/ app-tier --recursive
+---
+  - name: app playbook
+    hosts: all
+    become: true
+    tasks:
+          - name: download from s3
+            ansible.builtin.shell: aws s3 cp s3://ahjoesbucket/app-tier/ app-tier --recursive
+            args:
+              chdir: ~/
+#ansible-playbook -i aws_ec2.yaml -l aws_ec2 test-playbook.yaml --private-key=ALB-KEY.pem --user ec2-user
