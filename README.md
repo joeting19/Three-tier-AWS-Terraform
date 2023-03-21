@@ -1,12 +1,9 @@
-# Tf_three_tier_archi
-terraform three tier architecture with load balancers, rds db and ec2 instances.
-Created by joseph ting
+This repo contains terraform configuration files for a three tier architecture in AWS
 
-THis was a 3 tier architecture designed in terraform. It has various components such as:
-
--external alb, internal alb
+-VPC (private and public subnets, internet gateway, route tables, associations)
+-security groups configured.
+-external and internal load balancer
 -web servers
 -app servers
 -rds database
--security groups configured.
 -also sets up ansible control node and slave nodes. 
